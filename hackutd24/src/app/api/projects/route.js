@@ -90,3 +90,11 @@ export async function POST(request) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
+
+// You can also handle other HTTP methods if needed
+export async function GET(request) {
+  return NextResponse.json(
+    { message: "GET method is not supported for this route." },
+    { status: 405 }
+  );
+}
