@@ -22,7 +22,7 @@ export default function RootLayout({ children }) {
   const [isNavOpen, setIsNavOpen] = useState(true);
 
   return (
-    <ClerkProvider>
+    <ClerkProvider dynamic>
       <html lang="en">
         <body className="flex bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
           {/* Sidebar Navigation */}
@@ -48,7 +48,7 @@ export default function RootLayout({ children }) {
                 </button>
               </div>
               {/* Navigation Links */}
-              
+
               <ul className="flex-grow flex flex-col items-start p-4 space-y-4">
                 <SignedOut className="">
                   <li className="flex items-center">
@@ -126,7 +126,6 @@ export default function RootLayout({ children }) {
                     </span>
                   </Link>
                 </li>
-              
               </ul>
             </div>
           </nav>

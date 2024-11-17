@@ -3,49 +3,21 @@
 import { PinataSDK } from "pinata";
 
 export const pinata = new PinataSDK({
-  pinataJwt: `${process.env.PINATA_JWT}`,
-  pinataGateway: `${process.env.NEXT_PUBLIC_GATEWAY_URL}`,
+  pinataJwt: process.env.PINATA_JWT,
+  pinataGateway: process.env.GATEWAY_URL,
 });
 
-// Utility function to upload model files
-export async function uploadModel(file, metadata) {
+export async function uploadFile(file, metadata = {}) {
   try {
-    const response = await pinata.upload
-      .file(file)
-      .addMetadata({
-        name: metadata.name,
-        keyvalues: {
-          framework: metadata.framework,
-          metrics: JSON.stringify(metadata.metrics),
-          parameters: JSON.stringify(metadata.parameters),
-        },
-      })
-      .group(process.env.MODELS_GROUP_ID);
-
+    console.log("Uploading file to Pinata...");
+    const response = await pinata.upload.file(file, {
+      name: metadata.name || "file",
+      keyvalues: metadata.keyvalues || {},
+    });
+    console.log("File uploaded successfully:", response.data);
     return response;
   } catch (error) {
-    console.error("Model upload failed:", error);
-    throw error;
-  }
-}
-
-// Utility function to upload datasets
-export async function uploadDataset(file, metadata) {
-  try {
-    const response = await pinata.upload
-      .file(file)
-      .addMetadata({
-        name: metadata.name,
-        keyvalues: {
-          schema: JSON.stringify(metadata.schema),
-          statistics: JSON.stringify(metadata.statistics),
-        },
-      })
-      .group(process.env.DATASETS_GROUP_ID);
-
-    return response;
-  } catch (error) {
-    console.error("Dataset upload failed:", error);
+    console.error("Error uploading file to Pinata:", error);
     throw error;
   }
 }

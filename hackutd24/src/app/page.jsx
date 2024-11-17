@@ -1,29 +1,30 @@
+"use client";
+
 import Link from "next/link";
-import { auth } from "@clerk/nextjs/server";
+import { useAuth } from "@clerk/nextjs";
 
 export default function LandingPage() {
-  const { userId } = auth();
+  const { isSignedIn } = useAuth();
+
+  if (isSignedIn) {
+    // Redirect to dashboard
+    if (typeof window !== "undefined") {
+      window.location.href = "/dashboard";
+    }
+    return null; // Avoid rendering
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <nav className="py-6 flex justify-between items-center">
           <div className="text-xl font-bold">ML Model Manager</div>
-          {userId ? (
-            <Link
-              href="/dashboard"
-              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-            >
-              Go to Dashboard
-            </Link>
-          ) : (
-            <Link
-              href="/sign-in"
-              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-            >
-              Sign In
-            </Link>
-          )}
+          <Link
+            href="/sign-in"
+            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          >
+            Sign In
+          </Link>
         </nav>
 
         <main className="py-20">
@@ -37,21 +38,12 @@ export default function LandingPage() {
               storage.
             </p>
             <div className="mt-10">
-              {userId ? (
-                <Link
-                  href="/dashboard"
-                  className="bg-blue-500 text-white px-6 py-3 rounded-lg text-lg font-medium hover:bg-blue-600"
-                >
-                  Go to Dashboard
-                </Link>
-              ) : (
-                <Link
-                  href="/sign-in"
-                  className="bg-blue-500 text-white px-6 py-3 rounded-lg text-lg font-medium hover:bg-blue-600"
-                >
-                  Get Started
-                </Link>
-              )}
+              <Link
+                href="/sign-in"
+                className="bg-blue-500 text-white px-6 py-3 rounded-lg text-lg font-medium hover:bg-blue-600"
+              >
+                Get Started
+              </Link>
             </div>
           </div>
         </main>

@@ -1,20 +1,33 @@
-import { auth } from "@clerk/nextjs";
-import { redirect } from "next/navigation";
-import ProjectList from "@/components/ProjectList";
+"use client";
 
-export default function DashboardPage() {
-  const { userId } = auth();
+import { useEffect, useState } from "react";
+import ProjectCard from "../components/ProjectCard";
 
-  if (!userId) {
-    redirect("/sign-in");
-  }
+export default function Dashboard() {
+  const [projects, setProjects] = useState([]);
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const response = await fetch("/api/projects");
+        const data = await response.json();
+        setProjects(data.projects || []);
+      } catch (error) {
+        console.error("Error fetching projects:", error);
+      }
+    };
+
+    fetchProjects();
+  }, []);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">Your Projects</h1>
+    <div>
+      <h1 className="text-2xl font-bold">Your Projects</h1>
+      <div className="grid grid-cols-1 gap-4">
+        {projects.map((project) => (
+          <ProjectCard key={project.id} project={project} />
+        ))}
       </div>
-      <ProjectList />
     </div>
   );
 }

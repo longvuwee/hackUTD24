@@ -1,48 +1,46 @@
 import { NextResponse } from "next/server";
-import { initDb } from "../../../../utils/db";
-import { createProject } from "../../../../utils/projects";
-import { auth, currentUser } from "@clerk/nextjs/server";
+import { initDatabase, createTable } from "../../../../utils/pglite";
+import { pinata } from "../../../../utils/config";
 
-export async function GET() {
+export async function POST(request) {
   try {
-    const { userId } = await auth();
-    if (!userId) {
-      return new NextResponse("Unauthorized", { status: 401 });
+    const { userId, name, description } = await request.json();
+
+    if (!userId || !name || !description) {
+      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    const db = await initDb();
-    const result = await db.query(
-      "SELECT * FROM projects WHERE owner_id = $1 OR id IN (SELECT project_id FROM collaborators WHERE user_id = $1)",
-      [userId],
+    console.log("Received data:", { userId, name, description });
+
+    // Step 1: Initialize the Project Database
+    const db = await initDatabase();
+    console.log("Database initialized.");
+
+    // Step 2: Create Files Table
+    await createTable(
+      db,
+      "files",
+      "id INTEGER PRIMARY KEY, name TEXT, type TEXT, cid TEXT",
     );
+    console.log("Table created.");
 
-    return NextResponse.json({ data: result.rows });
-  } catch (error) {
-    console.error("Failed to fetch projects:", error);
-    return NextResponse.json({ error: "Failed to fetch projects" }, { status: 500 });
-  }
-}
+    // Step 3: Dump Database to Blob
+    const dumpPath = `project-${name}`;
+    console.log("Dumping database with path:", dumpPath);
 
-export async function POST() {
-  try {
-    const { userId } = await auth();
-    if (!userId) {
-      return new NextResponse("Unauthorized", { status: 401 });
-    }
+    const dbBlob = await db.dumpDataDir(dumpPath);
+    console.log("Database dumped:", dbBlob);
 
-    const user = await currentUser();
-    const db = await initDb();
-    const body = await request.json();
+    // Step 4: Upload to Pinata
+    const uploadResponse = await pinata.upload.file(dbBlob);
+    console.log("Database uploaded:", uploadResponse);
 
-    const project = await createProject(db, {
-      ...body,
-      ownerId: userId,
-      ownerName: user.firstName, // Store additional user info if needed
+    return NextResponse.json({
+      message: "Project database created",
+      uploadResponse,
     });
-
-    return NextResponse.json({ data: project });
   } catch (error) {
-    console.error("Project creation failed:", error);
-    return NextResponse.json({ error: "Failed to create project" }, { status: 500 });
+    console.error("Error creating project:", error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
