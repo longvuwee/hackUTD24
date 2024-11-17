@@ -19,6 +19,7 @@ export default function Dashboard() {
   const [isNavOpen, setIsNavOpen] = useState(false); 
 
   return (
+    <>
     <div>
       <h1 className="text-2xl font-bold">Your Projects</h1>
       <div className="grid grid-cols-1 gap-4">
@@ -27,5 +28,6 @@ export default function Dashboard() {
         ))}
       </div>
     </div>
+    </>
   );
 }

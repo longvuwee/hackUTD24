@@ -2,6 +2,13 @@
 
 import Link from "next/link";
 import { useAuth } from "@clerk/nextjs";
+import {
+  ClerkProvider,
+  SignInButton,
+  SignedIn,
+  SignedOut,
+  UserButton,
+} from "@clerk/nextjs";
 
 export default function LandingPage() {
   const { isSignedIn } = useAuth();
