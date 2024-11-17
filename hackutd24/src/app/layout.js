@@ -28,7 +28,7 @@ export default function RootLayout({ children }) {
           {/* Sidebar Navigation */}
           <nav
             className={`fixed top-0 left-0 h-full bg-white dark:bg-gray-800 shadow-md z-50 transition-all duration-300 ${
-              isNavOpen ? "w-64" : "w-16"
+              isNavOpen ? "w-64" : "w-20"
             }`}
           >
             <div className="flex flex-col h-full">
@@ -42,9 +42,7 @@ export default function RootLayout({ children }) {
                   <Link href="/">WebsiteName</Link>
                 </h1>
                 <button
-                  className="text-xl"
                   onClick={() => setIsNavOpen(!isNavOpen)}
-                  aria-label="Toggle Navigation"
                 >
                   <AiOutlineBars className="w-10 h-10" />
                 </button>
@@ -62,7 +60,7 @@ export default function RootLayout({ children }) {
                     <UserButton
                       appearance={{
                         elements: {
-                          userButtonAvatarBox: "w-12 h-12", // Adjust the width and height
+                          userButtonAvatarBox: "w-10 h-10", // Adjust the width and height
                         },
                       }}
                     />
