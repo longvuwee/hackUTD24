@@ -1,6 +1,20 @@
-import { clerkMiddleware } from "@clerk/nextjs/server";
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
-export default clerkMiddleware();
+// Define which routes are protected and which are public
+const isProtectedApiRoute = createRouteMatcher(["/dashboard(.*)"]);
+
+const isPublicRoute = createRouteMatcher([
+  "/sign-in(.*)",
+  "/sign-up(.*)",
+  "/", // Landing page
+]);
+
+export default clerkMiddleware(async (auth, req) => {
+  // Check if route is protected
+  if (!isPublicRoute(req) && isProtectedApiRoute(req)) {
+    await auth.protect();
+  }
+});
 
 export const config = {
   matcher: [
