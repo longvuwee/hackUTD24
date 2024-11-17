@@ -1,5 +1,6 @@
 "use client";
 
+import { Montserrat } from 'next/font/google';
 import Link from "next/link";
 import { useAuth } from "@clerk/nextjs";
 import {
@@ -9,6 +10,8 @@ import {
   SignedOut,
   UserButton,
 } from "@clerk/nextjs";
+
+const mont = Montserrat({ subsets: ['latin'],});
 
 export default function LandingPage() {
   const { isSignedIn } = useAuth();
@@ -22,24 +25,17 @@ export default function LandingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+    <div className={`${mont.className} min-h-screen bg-custom-background text-white`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <nav className="py-6 flex justify-between items-center">
-          <div className="text-xl font-bold">ML Model Manager</div>
-          <Link
-            href="/sign-in"
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-          >
-            Sign In
-          </Link>
         </nav>
 
         <main className="py-20">
           <div className="text-center">
-            <h1 className="text-4xl font-bold text-gray-900 sm:text-6xl">
+            <h1 className="text-6xl font-bold">
               Manage Your ML Models
             </h1>
-            <p className="mt-6 text-lg text-gray-600 max-w-3xl mx-auto">
+            <p className="mt-6 text-lg max-w-3xl mx-auto">
               A simple and efficient way to store, version, and share your machine
               learning models. Built with Pinata IPFS for reliable and decentralized
               storage.
@@ -47,7 +43,7 @@ export default function LandingPage() {
             <div className="mt-10">
               <Link
                 href="/sign-in"
-                className="bg-blue-500 text-white px-6 py-3 rounded-lg text-lg font-medium hover:bg-blue-600"
+                className="bg-custom-purple rounded-lg font-bold text-[25px] shadow-[0px_4px_20px_0px_#7A2DCB] shadow-custom-purple text-white px-4 py-2"
               >
                 Get Started
               </Link>

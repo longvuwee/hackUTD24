@@ -3,7 +3,9 @@
 import { useState } from "react";
 import { useUser } from "@clerk/nextjs"; //import clerk user hook
 import { Montserrat } from 'next/font/google';
-import Card from '../components/Card.jsx'
+import Card from '../components/Card.jsx';
+import Signout from '../components/Signout.jsx';
+import Navbar from '../components/Navbar.jsx';
 
 const mont = Montserrat({ subsets: ['latin'],});
 
@@ -61,15 +63,18 @@ export default function Home() {
   };
 
   return (
-    <main className={`${mont.className} min-h-screen flex flex-col justify-start items-start ml-[300px]`}>
-      <h1 className="text-5xl font-bold mb-10">
+    <>
+    <Navbar></Navbar>
+    <main className={`${mont.className} ml-[200px] min-h-screen flex flex-col justify-start items-start p-5 bg-custom-background`}>
+          <Signout></Signout>
+      <h1 className="text-5xl font-bold mb-10 text-white">
         Projects
       </h1>
       <div className="flex justify-start gap-[70px]">
-        <button className="border px-7 py-1.5 rounded-[15px] border-black font-bold">
+        <button className="border px-7 py-1.5 rounded-[15px] border-white font-bold text-white">
           Models
         </button>
-        <button className="border px-7 py-1.5 rounded-[15px] border-black font-bold">
+        <button className="border px-7 py-1.5 rounded-[15px] border-white font-bold text-white">
           Datasets
         </button>
       </div>
@@ -98,5 +103,6 @@ export default function Home() {
         <img src={url} alt="Image from Pinata" className="mt-4 max-w-xs" />
       )}
     </main>
+    </>
   );
 }
