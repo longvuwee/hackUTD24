@@ -4,11 +4,17 @@ import { pinata } from "../../../../utils/config";
 import fs from "fs";
 import path from "path";
 
+// Mock function to check authentication - replace with your actual logic
+const isAuthenticated = (request) => {
+  // You can check for a session token, cookie, or any other method
+  const token = request.headers.get("Authorization");
+  return token === "Bearer valid_token"; // Replace with actual validation logic
+};
+
 const validateInput = (userId, name, description) => {
   if (!userId || !name || !description) {
     throw new Error("Missing required fields");
   }
-  // Add more validation here if needed
 };
 
 const createProjectDatabase = async (db, name) => {
@@ -27,13 +33,11 @@ const createProjectDatabase = async (db, name) => {
 
 const dumpDatabase = async (db, dumpPath) => {
   try {
-    // Ensure the directory exists
     const dir = path.dirname(dumpPath);
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }
 
-    // Dump the database to the specified path
     const dbBlob = await db.dump(dumpPath);
     console.log("Database dumped:", dbBlob);
     return dbBlob;
@@ -56,6 +60,11 @@ const uploadToPinata = async (dbBlob) => {
 
 export async function POST(request) {
   try {
+    // Check if the user is authenticated
+    if (!isAuthenticated(request)) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     console.log("Received request:", request);
 
     const { userId, name, description } = await request.json();
@@ -65,20 +74,16 @@ export async function POST(request) {
 
     console.log("Received data:", { userId, name, description });
 
-    // Step 1: Initialize the Project Database
     const db = await initDatabase();
     console.log("Database initialized:", db);
 
-    // Step 2: Create Project Database
     await createProjectDatabase(db, name);
 
-    // Step 3: Dump Database to Blob
-    const dumpPath = path.join(process.cwd(), "uploads", `project-${name}.db`); // Ensure the path is correct
+    const dumpPath = path.join(process.cwd(), "uploads", `project-${name}.db`);
     console.log("Dump path:", dumpPath);
 
     const dbBlob = await dumpDatabase(db, dumpPath);
 
-    // Step 4: Upload to Pinata
     const uploadResponse = await uploadToPinata(dbBlob);
 
     return NextResponse.json({
@@ -91,7 +96,6 @@ export async function POST(request) {
   }
 }
 
-// You can also handle other HTTP methods if needed
 export async function GET(request) {
   return NextResponse.json(
     { message: "GET method is not supported for this route." },
